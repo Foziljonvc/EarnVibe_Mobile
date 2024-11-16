@@ -1,0 +1,70 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: EarnVibeMobile_app
+        restart: unless-stopped
+        environment:
+            - APP_ENV=local
+            - APP_DEBUG=true
+            - APP_KEY=${APP_KEY}
+            - DB_CONNECTION=pgsql
+            - DB_HOST=postgres
+            - DB_PORT=5432
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+
+    postgres:
+        image: postgres
+        container_name: EarnVibeMobile_postgres
+        restart: always
+        environment:
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app-network
+        expose:
+            - 5432
+
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: EarnVibeMobile_pgadmin
+        restart: unless-stopped
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+        ports:
+            - "8081:80"
+        networks:
+            - app-network
+
+    web:
+        container_name: EarnVibeMobile_web
+        image: nginx:alpine
+        ports:
+            - "9000:80"
+        volumes:
+            - ./:/var/www
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - app
+        networks:
+            - app-network
+
+volumes:
+    postgres_data:
+
+networks:
+    app-network:
+        driver: bridge
