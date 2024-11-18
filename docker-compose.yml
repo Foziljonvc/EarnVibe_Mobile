@@ -53,7 +53,7 @@ services:
         container_name: EarnVibeMobile_web
         image: nginx:alpine
         ports:
-            - "9000:80"
+            - "8000:80"  # Portni 9000 dan 8000 ga o'zgartirdik
         volumes:
             - ./:/var/www
             - ./nginx.conf:/etc/nginx/conf.d/default.conf

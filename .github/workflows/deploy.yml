@@ -1,0 +1,46 @@
+name: Laravel Deploy
+
+on:
+  push:
+    branches: [ main ]  # yoki master - repositoryingiz asosiy branch nomiga qarab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+      - name: Deploy to Server
+        env:
+          SERVER_IP: ${{ secrets.SERVER_SSH_IP }}
+          SERVER_USER: ${{ secrets.SERVER_SSH_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'ENDSSH'
+            cd /var/www/EarnVibeMobile
+
+            # Pull latest changes
+            git pull origin main
+
+            # Fix permissions
+            chown -R www-data:www-data .
+            chmod -R 755 .
+            chmod -R 775 storage bootstrap/cache
+
+            # Restart and rebuild containers
+            docker-compose down
+            docker-compose up -d --build
+
+            # Run Laravel commands
+            docker-compose exec -T app php artisan migrate --force
+            docker-compose exec -T app php artisan config:cache
+            docker-compose exec -T app php artisan route:cache
+            docker-compose exec -T app php artisan view:cache
+          ENDSSH
