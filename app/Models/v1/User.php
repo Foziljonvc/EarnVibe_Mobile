@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\v1;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
-     * The attributes that are mass assignable.
+     * Mass assignable attributes.
      *
      * @var array<int, string>
      */
@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password_hash',
         'status',
         'last_login_at',
+        'email_verified',  // email_verified ni qo'shamiz
     ];
 
     /**
@@ -31,7 +32,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
+        'password_hash',  // password_hash ni yashiramiz
         'remember_token',
     ];
 
@@ -40,11 +41,13 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified' => 'boolean',  // email_verified boolean sifatida
+        'last_login_at' => 'datetime',   // last_login_at datetime sifatida
+    ];
+
+    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasOne(Profile::class);
     }
 }

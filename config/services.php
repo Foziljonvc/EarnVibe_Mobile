@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'disposable_domains' => [
+        'tempmail.com',
+        'throwaway.com',
+    ],
+    'email_validator' => [
+        'key' => env('EMAIL_VALIDATOR_API_KEY'),
+    ],
+
 ];
