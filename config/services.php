@@ -39,8 +39,12 @@ return [
         'tempmail.com',
         'throwaway.com',
     ],
-    'email_validator' => [
-        'key' => env('EMAIL_VALIDATOR_API_KEY'),
+
+    'mailgun' => [
+        'domain' => env('MAILGUN_DOMAIN'),
+        'secret' => env('MAILGUN_SECRET'),
+        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+        'scheme' => 'https',
     ],
 
 ];

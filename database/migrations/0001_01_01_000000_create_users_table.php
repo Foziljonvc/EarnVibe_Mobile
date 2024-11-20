@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('status')->default('active'); # active, blocked, deleted
             $table->boolean('email_verified')->default(false);
             $table->timestamps();
-            $table->timestamp('last_login_at');
         });
     }
 

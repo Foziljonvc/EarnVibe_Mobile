@@ -5,6 +5,7 @@ namespace App\Models\v1;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 
@@ -22,7 +23,6 @@ class User extends Authenticatable
         'username',
         'password_hash',
         'status',
-        'last_login_at',
         'email_verified',  // email_verified ni qo'shamiz
     ];
 
@@ -43,11 +43,10 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified' => 'boolean',  // email_verified boolean sifatida
-        'last_login_at' => 'datetime',   // last_login_at datetime sifatida
     ];
 
-    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->hasOne(Profile::class);
+        return $this->belongsTo(User_Profile::class);
     }
 }

@@ -4,33 +4,18 @@ namespace App\Http\Controllers\Api\v1;
 
 trait ApiResponse
 {
-    /**
-     * Return success response
-     *
-     * @param mixed|null $data
-     * @param string|null $message
-     * @param int $code
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function success($data = null, string $message = null, int $code = 200)
+
+    protected function success($data = null, string $message = null, int $code = 200): \Illuminate\Http\JsonResponse
     {
         return response()->json([
             'success' => true,
             'data' => $data,
-            'message' => $message,
+            'error' => $message,
             'created_at' => now()->toISOString(),
         ], $code);
     }
 
-    /**
-     * Return error response
-     *
-     * @param string $message
-     * @param int $code
-     * @param array|null $errors
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function error(string $message, int $code = 400, ?array $errors = null)
+    protected function error(string $message, int $code = 400, ?array $errors = null): \Illuminate\Http\JsonResponse
     {
         return response()->json([
             'success' => false,
